@@ -1,3 +1,17 @@
+# Copyright 2016 Jarrod N. Bakker
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from classifiers import iscx_result_calc as rc
 from sklearn.naive_bayes import GaussianNB
 from numpy import float32 as np_float
@@ -14,8 +28,6 @@ class NaiveBayesCls:
         :param data_loader: Object from where the data is fetched from.
         """
         self._data, self._labels = data_loader.get_data()
-        #self._train_indices = data_loader.get_train_indices()
-        #self._test_indices = data_loader.get_test_indices()
         self._kfold = data_loader.get_kfold()
         self._classifier = GaussianNB()
 
@@ -25,7 +37,7 @@ class NaiveBayesCls:
         The data passed through to the fit() method cannot be a string
         type.
 
-        :return: Something...
+        :return: Results of the classification.
         """
         all_results = []  # Results from all fold trials
         fold_num = 1
@@ -33,7 +45,6 @@ class NaiveBayesCls:
             print("Training Naive Bayes...")
             train_array = np_array.array(map(self._data.__getitem__,
                                              train)).astype(np_float)
-
             train_label_array = np_array.array(map(
                 self._labels.__getitem__, train)).astype(np_float)
             self._classifier.fit(train_array, train_label_array)
