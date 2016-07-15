@@ -115,7 +115,7 @@ class ISCX2012IDS:
         print("Reading data from: {0}".format(fname))
         data_etree = etree.parse(fname)
         raw_data, raw_labels = self._etree_to_dict(data_etree)
-        print("Loading complete.")
+        print("\tLoading complete.")
         return raw_data, raw_labels
 
     def _etree_to_dict(self, etree):

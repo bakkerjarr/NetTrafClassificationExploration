@@ -23,6 +23,7 @@ from classifiers.iscx_decisiontree import DecisionTreeCls
 from classifiers.iscx_random_forest import RandomForestCls
 from data.iscx_ids_2012 import ISCX2012IDS
 from os.path import isfile
+import datetime
 import sys
 
 __author__ = "Jarrod N. Bakker"
@@ -90,8 +91,14 @@ class Classify:
         print("TEST COMPLETE: Exiting...")
 
 if __name__ == "__main__":
+    with open("test_time.txt", mode="a") as file_out:
+        cur_dt = str(datetime.datetime.now())
+        file_out.write("Test started at: {0}\n".format(cur_dt))
     files = ["TestbedTueJun15-1Flows.xml",
              "TestbedTueJun15-2Flows.xml",
              "TestbedTueJun15-3Flows.xml"]
     c = Classify(files)
     c.run_tests()
+    with open("test_time.txt", mode="a") as file_out:
+        cur_dt = str(datetime.datetime.now())
+        file_out.write("Test finished at: {0}\n".format(cur_dt))
