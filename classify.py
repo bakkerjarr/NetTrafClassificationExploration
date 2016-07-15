@@ -17,7 +17,10 @@
 
 from classifiers.iscx_naive_bayes import NaiveBayesCls
 from classifiers.iscx_svm import SVMCls
+from classifiers.iscx_lda import LDACls
+from classifiers.iscx_qda import QDACls
 from data.iscx_ids_2012 import ISCX2012IDS
+from os.path import isfile
 import sys
 
 __author__ = "Jarrod N. Bakker"
@@ -35,52 +38,52 @@ class Classify:
         self._dataset_files = dataset_files
         self._iscx2012_loader = ISCX2012IDS(dataset_files)
 
-    def test_nb(self):
-        """Test a Naive Bayes classifier.
+    def run_tests(self):
+        """Test a bunch of classifiers.
 
-        :return:
+        :return: ?
         """
         csv_headings = "classifier, features, seed, trial_num, " \
                        "fold_num, TP, TN, FP, FN, TP_rate, FP_rate, " \
                        "num_mis, total_test\n"
-        classifier = "SVM"
-        features = '["log(totalSourceBytes)"; "flowDuration"]'
-        seed = 99999999
-        num_trials = 5
-        num_folds = 100
+        classifiers = [NaiveBayesCls, SVMCls, LDACls, QDACls]
+        num_trials = 10
+        num_folds = 30
 
         if not self._iscx2012_loader.load_data():
             print("Failed to read data from file.")
             sys.exit(-1)
 
-        # with open("naive_bayes_results_10-fold_test.csv", mode="w") as \
-        #         file_out:
-        #     file_out.write(csv_headings)
-        #     for trial_num in range(1, num_trials + 1):
-        #         self._iscx2012_loader.prepare_data(num_folds, seed)
-        #         naive_bayes = NaiveBayesCls(self._iscx2012_loader)
-        #         results = naive_bayes.classify()
-        #         print("Writing results for trial {0}.".format(trial_num))
-        #         for r in results:
-        #             line = "{0}, {1}, {2}, {3}, {4}\n".format(
-        #                 classifier, features, seed, trial_num,
-        #                 str(r)[1:-1])
-        #             file_out.write(line)
-        #         seed += 1
-        with open("svm_results_100-fold_test_2.csv", mode="w") as \
-                file_out:
-            file_out.write(csv_headings)
-            for trial_num in range(1, num_trials + 1):
-                self._iscx2012_loader.prepare_data(num_folds, seed)
-                svm = SVMCls(self._iscx2012_loader)
-                results = svm.classify()
-                print("Writing results for trial {0}.".format(trial_num))
-                for r in results:
-                    line = "{0}, {1}, {2}, {3}, {4}\n".format(
-                        classifier, features, seed, trial_num,
-                        str(r)[1:-1])
-                    file_out.write(line)
-                seed += 1
+        features_set, labels = self._iscx2012_loader.get_data()
+        for features in features_set:
+            for cls in classifiers:
+                print("Testing features {0} with {1}.".format(
+                    features, cls))
+                seed = 99999999
+                file_name = "{0}_{1}-fold_results.csv".format(
+                    cls.NAME, num_folds)
+                # If the results file does not exist we should create
+                # one and write a header to it.
+                if not isfile(file_name):
+                    print("Creating file: {0}".format(file_name))
+                    with open(file_name, mode="w") as new_file:
+                        new_file.write(csv_headings)
+                with open(file_name, mode="a") as file_out:
+                    for trial_num in range(1, num_trials+1):
+                        skf = self._iscx2012_loader.get_kfold(num_folds,
+                                                              seed)
+                        # create the classifier, pass the data through
+                        # call classify
+                        results = cls(features_set[features],
+                                      labels, skf).classify()
+                        print("\tWriting results for trial {0}.".format(
+                            trial_num))
+                        for r in results:
+                            line = "{0}, {1}, {2}, {3}, {4}\n".format(
+                                cls.NAME, features, seed, trial_num,
+                                str(r)[1:-1])
+                            file_out.write(line)
+                        seed += 1
         print("TEST COMPLETE: Exiting...")
 
 if __name__ == "__main__":
@@ -88,4 +91,4 @@ if __name__ == "__main__":
              "TestbedTueJun15-2Flows.xml",
              "TestbedTueJun15-3Flows.xml"]
     c = Classify(files)
-    c.test_nb()
+    c.run_tests()

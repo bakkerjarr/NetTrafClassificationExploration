@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
+from data import iscx_ids_2012_features as iscx_features
+
 from lxml import etree
 from sklearn.cross_validation import StratifiedKFold
-import math
 import random
 
 __author__ = "Jarrod N. Bakker"
@@ -32,13 +32,6 @@ class ISCX2012IDS:
         :param fnames: List of dataset file names.
         """
         self._rand = random
-        #self._features = ["totalSourceBytes", "totalDestinationBytes",
-        #                  "totalSourcePackets",
-        #                  "totalDestinationPackets"]
-        #self._features = ["totalSourceBytes", "totalSourcePackets"]
-        self._features = ["totalSourceBytes", "startDateTime",
-                          "stopDateTime"]
-        self._transform = True
         self._dataset_files = []
         for f in fnames:
             self._dataset_files.append(self._BASE_PATH + f)
@@ -61,25 +54,7 @@ class ISCX2012IDS:
             raw_data, raw_labels = self._read_data(fname)
             self._raw_data.extend(raw_data)
             self._labels.extend(raw_labels)
-        feat_data = self._select_features(self._raw_data, self._features)
-        if self._transform:
-            #trans_data = self._transform_data_bpp(feat_data)
-            trans_data = self._calculate_flow_duration(feat_data)
-        else:
-            trans_data = feat_data
-        self._data = trans_data
-        return True
-
-    def prepare_data(self, num_folds, rand_seed):
-        """Prepare data for processing by calculating k folds.
-
-        :param num_folds: The number of folds to form.
-        :param rand_seed: A seed for shuffling the k folds.
-        :return: True if successful, False otherwise.
-        """
-        print("Calculating {0} folds...".format(num_folds))
-        self._skf = StratifiedKFold(self._labels, n_folds=num_folds,
-                                    shuffle=True, random_state=rand_seed)
+        self._data = self._process_features(self._raw_data)
         return True
 
     def get_data(self):
@@ -89,12 +64,17 @@ class ISCX2012IDS:
         """
         return self._data, self._labels
 
-    def get_kfold(self):
-        """Return the stratified k-fold dataset.
+    def get_kfold(self, num_folds, rand_seed):
+        """Prepare data for processing by calculating k folds.
 
-        :return: A StratifiedKFold object to use for iterating with.
+        :param num_folds: The number of folds to form.
+        :param rand_seed: A seed for shuffling the k folds.
+        :return: StratifiedKFold object representing what data set
+        elements belong in each fold.
         """
-        return self._skf
+        print("Calculating {0} folds...".format(num_folds))
+        return StratifiedKFold(self._labels, n_folds=num_folds,
+                               shuffle=True, random_state=rand_seed)
 
     def get_test_indices(self):
         """Return the indices in each test set fold.
@@ -164,72 +144,28 @@ class ISCX2012IDS:
             data.append(flow_data)
         return data, labels
 
-    def _select_features(self, dataset, features):
-        """Select features from the ISCX data.
+    def _process_features(self, dataset):
+        """Select and process features from the ISCX data.
 
         :param dataset: Dataset to select features from.
-        :param features: A list of features encoded using the
-        FlowElement enum.
-        :return: The dataset with the selected features.
+        :return: The dict:list of feature sets.
         """
-        print("Selecting features from data...")
-        processed_dataset = []
-        for flow in dataset:
-            new_entry = []
-            for f in features:
-                new_entry.append(flow[f])
-            processed_dataset.append(new_entry)
-        return processed_dataset
-
-    def _transform_data_bpp(self, data):
-        """Transform the features in data flows to get the bytes per
-        packets ratio.
-
-        :param data: The dataset to transform.
-        :return: Transformed data.
-        """
-        print("Transforming data...")
-        trans_data = []
-        for flow in data:
-            new_entry = []
-            src_bp_ratio = 0
-            try:
-                src_bp_ratio = float(flow[0])/float(flow[2])
-            except ZeroDivisionError:
-                pass
-            new_entry.append(src_bp_ratio)
-            dst_bp_ratio = 0
-            try:
-                dst_bp_ratio = float(flow[1])/float(flow[3])
-            except ZeroDivisionError:
-                pass
-            new_entry.append(dst_bp_ratio)
-            trans_data.append(new_entry)
-        return trans_data
-
-    def _calculate_flow_duration(self, data):
-        """The data to calculate the flow duration time for.
-
-        :param data: The data.
-        :return: Transformed data.
-        """
-        print("Transforming data...")
-        trans_data = []
-        for flow in data:
-            new_entry = []
-            src_bytes = 0
-            try:
-                # Remember to include log(source bytes)
-                src_bytes = math.log(float(flow[0]))
-            except ValueError:
-                pass
-            new_entry.append(src_bytes)
-            start_dt = datetime.strptime(flow[1], "%Y-%m-%dT%H:%M:%S")
-            stop_dt = datetime.strptime(flow[2], "%Y-%m-%dT%H:%M:%S")
-            duration = (stop_dt-start_dt).seconds
-            new_entry.append(duration)
-            trans_data.append(new_entry)
-        return trans_data
+        print("Processing features from data...")
+        feature_set = {}
+        feature_set["TotalSourceBytes TotalDestinationBytes"] = \
+            iscx_features.src_bytes_dst_bytes(dataset)
+        feature_set["TotalSourceBytes TotalSourcePackets"] = \
+            iscx_features.src_bytes_src_pckts(dataset)
+        feature_set["SourceBytes-per-Packet " \
+                    "DestinationBytes-per-Packet"] = \
+            iscx_features.src_bpp_dst_bpp(dataset)
+        feature_set["SourceBytes FlowDuration"] = \
+            iscx_features.src_bytes_flow_duration(dataset)
+        feature_set["log(SourceBytes) FlowDuration"] = \
+            iscx_features.log_src_bytes_flow_duration(dataset)
+        feature_set["SourceBytes log(FlowDuration)"] = \
+            iscx_features.src_bytes_log_flow_duration(dataset)
+        return feature_set
 
 
 class TagValue:

@@ -22,13 +22,19 @@ __author__ = "Jarrod N. Bakker"
 
 class SVMCls:
 
-    def __init__(self, data_loader):
+    NAME = "SVM"
+
+    def __init__(self, data, labels, skf):
         """Initialise.
 
-        :param data_loader: Object from where the data is fetched from.
+        :param data: Data set for the classifier to use.
+        :param labels: Labels indicating if a flow is normal or attack.
+        :param skf: StratifiedKFold object representing what data set
+        elements belong in each fold.
         """
-        self._data, self._labels = data_loader.get_data()
-        self._kfold = data_loader.get_kfold()
+        self._data = data
+        self._labels = labels
+        self._kfold = skf
         self._classifier = svm.SVC()  # TODO Try LinearSVC
 
     def classify(self):
@@ -48,14 +54,14 @@ class SVMCls:
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:
-            print("Training SVM...")
+            print("\tTraining SVM...")
             # NOTE: I have switched the training and testing set around.
             train_array = np_array.array(map(self._data.__getitem__,
                                              test)).astype(np_float)
             train_label_array = np_array.array(map(
                 self._labels.__getitem__, test)).astype(np_float)
             self._classifier.fit(train_array, train_label_array)
-            print("Testing classifier...")
+            print("\tTesting classifier...")
             test_array = np_array.array(map(self._data.__getitem__,
                                              train)).astype(np_float)
             test_label_array = np_array.array(map(
@@ -65,7 +71,7 @@ class SVMCls:
             mislabeled = (test_label_array != pred).sum()
             tp, tn, fp, fn = rc.calculate_tpn_fpn(test_label_array, pred)
             # print("TP: {0}\tTN: {1}\tFP: {2}\tFN: {3}".format(tp, tn,
-            #                                                 fp, fn))
+            #                                                   fp, fn))
             detection_rate = rc.detection_rate(tp, fn)
             false_pos_rate = rc.false_positive_rate(tn, fp)
             # print("Detection rate: {0}\tFalse positive rate: "

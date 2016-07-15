@@ -22,13 +22,19 @@ __author__ = "Jarrod N. Bakker"
 
 class NaiveBayesCls:
 
-    def __init__(self, data_loader):
+    NAME = "Naive_Bayes"
+
+    def __init__(self, data, labels, skf):
         """Initialise.
 
-        :param data_loader: Object from where the data is fetched from.
+        :param data: Data set for the classifier to use.
+        :param labels: Labels indicating if a flow is normal or attack.
+        :param skf: StratifiedKFold object representing what data set
+        elements belong in each fold.
         """
-        self._data, self._labels = data_loader.get_data()
-        self._kfold = data_loader.get_kfold()
+        self._data = data
+        self._labels = labels
+        self._kfold = skf
         self._classifier = GaussianNB()
 
     def classify(self):
@@ -42,29 +48,30 @@ class NaiveBayesCls:
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:
-            print("Training Naive Bayes...")
+            print("\tTraining Naive Bayes...")
+            # NOTE: I have switched the training and testing set around.
             train_array = np_array.array(map(self._data.__getitem__,
-                                             train)).astype(np_float)
-            train_label_array = np_array.array(map(
-                self._labels.__getitem__, train)).astype(np_float)
-            self._classifier.fit(train_array, train_label_array)
-            print("Testing classifier...")
-            test_array = np_array.array(map(self._data.__getitem__,
                                              test)).astype(np_float)
-            test_label_array = np_array.array(map(
+            train_label_array = np_array.array(map(
                 self._labels.__getitem__, test)).astype(np_float)
+            self._classifier.fit(train_array, train_label_array)
+            print("\tTesting classifier...")
+            test_array = np_array.array(map(self._data.__getitem__,
+                                             train)).astype(np_float)
+            test_label_array = np_array.array(map(
+                self._labels.__getitem__, train)).astype(np_float)
             test_size = len(test)
             pred = self._classifier.predict(test_array)
             mislabeled = (test_label_array != pred).sum()
             tp, tn, fp, fn = rc.calculate_tpn_fpn(test_label_array, pred)
-            #print("TP: {0}\tTN: {1}\tFP: {2}\tFN: {3}".format(tp, tn,
-            #                                                  fp, fn))
+            # print("TP: {0}\tTN: {1}\tFP: {2}\tFN: {3}".format(tp, tn,
+            #                                                   fp, fn))
             detection_rate = rc.detection_rate(tp, fn)
             false_pos_rate = rc.false_positive_rate(tn, fp)
-            #print("Detection rate: {0}\tFalse positive rate: "
-            #      "{1}".format(detection_rate, false_pos_rate))
-            #print("Number of mislabelled points out of a total {0} "
-            #      "points : {1}".format(test_size, mislabeled))
+            # print("Detection rate: {0}\tFalse positive rate: "
+            #       "{1}".format(detection_rate, false_pos_rate))
+            # print("Number of mislabelled points out of a total {0} "
+            #       "points : {1}".format(test_size, mislabeled))
             all_results.append([fold_num, tp, tn, fp, fn, detection_rate,
                                 false_pos_rate, mislabeled, test_size])
             fold_num += 1
