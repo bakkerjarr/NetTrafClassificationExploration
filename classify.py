@@ -20,6 +20,7 @@ from classifiers.iscx_svm import SVMCls
 from classifiers.iscx_lda import LDACls
 from classifiers.iscx_qda import QDACls
 from classifiers.iscx_decisiontree import DecisionTreeCls
+from classifiers.iscx_random_forest import RandomForestCls
 from data.iscx_ids_2012 import ISCX2012IDS
 from os.path import isfile
 import sys
@@ -48,9 +49,9 @@ class Classify:
                        "fold_num, TP, TN, FP, FN, TP_rate, FP_rate, " \
                        "num_mis, total_test\n"
         classifiers = [NaiveBayesCls, SVMCls, LDACls, QDACls,
-                       DecisionTreeCls]
-        num_trials = 30
-        num_folds = 30
+                       DecisionTreeCls, RandomForestCls]
+        num_trials = 1
+        num_folds = 2
 
         if not self._iscx2012_loader.load_data():
             print("Failed to read data from file.")
