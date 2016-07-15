@@ -46,19 +46,39 @@ class Classify:
 
         :return: ?
         """
+        with open("test_time.txt", mode="a") as file_out:
+            cur_dt = str(datetime.datetime.now())
+            file_out.write("Test started at: {0}\n".format(cur_dt))
+            
         csv_headings = "classifier, features, seed, trial_num, " \
                        "fold_num, TP, TN, FP, FN, TP_rate, FP_rate, " \
                        "num_mis, total_test\n"
         classifiers = [NaiveBayesCls, SVMCls, LDACls, QDACls,
                        DecisionTreeCls, RandomForestCls]
-        num_trials = 1
-        num_folds = 2
+        num_trials = 50
+        num_folds = 30
 
         if not self._iscx2012_loader.load_data():
             print("Failed to read data from file.")
             sys.exit(-1)
 
         features_set, labels = self._iscx2012_loader.get_data()
+
+        with open("test_time.txt", mode="a") as file_out:
+            file_out.write("\tTesting classifiers: ")
+            for i in range(len(classifiers)):
+                if i != len(classifiers)-1:
+                    file_out.write("{0}, ".format(classifiers[i].NAME))
+                else:
+                    file_out.write("{0}\n".format(classifiers[i].NAME))
+            file_out.write("\tFeature sets: ")
+            fs_names = features_set.keys()
+            for i in range(len(fs_names)):
+                if i != len(fs_names)-1:
+                    file_out.write("{0}, ".format(fs_names[i]))
+                else:
+                    file_out.write("{0}\n".format(fs_names[i]))
+
         for features in features_set:
             for cls in classifiers:
                 print("Testing features [{0}] with {1}.".format(
@@ -88,17 +108,15 @@ class Classify:
                                 str(r)[1:-1])
                             file_out.write(line)
                         seed += 1
+
+        with open("test_time.txt", mode="a") as file_out:
+            cur_dt = str(datetime.datetime.now())
+            file_out.write("Test finished at: {0}\n".format(cur_dt))
         print("TEST COMPLETE: Exiting...")
 
 if __name__ == "__main__":
-    with open("test_time.txt", mode="a") as file_out:
-        cur_dt = str(datetime.datetime.now())
-        file_out.write("Test started at: {0}\n".format(cur_dt))
     files = ["TestbedTueJun15-1Flows.xml",
              "TestbedTueJun15-2Flows.xml",
              "TestbedTueJun15-3Flows.xml"]
     c = Classify(files)
     c.run_tests()
-    with open("test_time.txt", mode="a") as file_out:
-        cur_dt = str(datetime.datetime.now())
-        file_out.write("Test finished at: {0}\n".format(cur_dt))
