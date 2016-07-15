@@ -19,6 +19,7 @@ from classifiers.iscx_naive_bayes import NaiveBayesCls
 from classifiers.iscx_svm import SVMCls
 from classifiers.iscx_lda import LDACls
 from classifiers.iscx_qda import QDACls
+from classifiers.iscx_decisiontree import DecisionTreeCls
 from data.iscx_ids_2012 import ISCX2012IDS
 from os.path import isfile
 import sys
@@ -46,8 +47,9 @@ class Classify:
         csv_headings = "classifier, features, seed, trial_num, " \
                        "fold_num, TP, TN, FP, FN, TP_rate, FP_rate, " \
                        "num_mis, total_test\n"
-        classifiers = [NaiveBayesCls, SVMCls, LDACls, QDACls]
-        num_trials = 10
+        classifiers = [NaiveBayesCls, SVMCls, LDACls, QDACls,
+                       DecisionTreeCls]
+        num_trials = 30
         num_folds = 30
 
         if not self._iscx2012_loader.load_data():
@@ -57,7 +59,7 @@ class Classify:
         features_set, labels = self._iscx2012_loader.get_data()
         for features in features_set:
             for cls in classifiers:
-                print("Testing features {0} with {1}.".format(
+                print("Testing features [{0}] with {1}.".format(
                     features, cls))
                 seed = 99999999
                 file_name = "{0}_{1}-fold_results.csv".format(
