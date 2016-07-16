@@ -105,6 +105,12 @@ class Classify:
                     print("\tWriting results for trial {0}.".format(
                         trial_num))
                     try:
+                        with open("test_time.txt", mode="a") as file_out:
+                            cur_dt = str(datetime.datetime.now())
+                            file_out.write("{0}\t\tWriting "
+                                           "test results to "
+                                           "file: {1}\n".format(
+                                            cur_dt, file_name))
                         file_out = open(file_name, mode="a")
                         for r in results:
                             line = "{0}, {1}, {2}, {3}, {4}\n".format(
