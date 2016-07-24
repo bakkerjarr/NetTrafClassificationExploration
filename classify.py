@@ -16,11 +16,12 @@
 """
 
 from classifiers.iscx_naive_bayes import NaiveBayesCls
-from classifiers.iscx_svm import SVMCls
+from classifiers.iscx_svm_rbf import SVMCls
 from classifiers.iscx_lda import LDACls
 from classifiers.iscx_qda import QDACls
 from classifiers.iscx_decisiontree import DecisionTreeCls
 from classifiers.iscx_random_forest import RandomForestCls
+#from classifiers.iscx_svm_quad import SVMQuadCls
 from contextlib import contextmanager
 from data.iscx_ids_2012 import ISCX2012IDS
 from os.path import isfile
@@ -54,8 +55,8 @@ class Classify:
         csv_headings = "classifier, features, seed, trial_num, " \
                        "fold_num, TP, TN, FP, FN, TP_rate, FP_rate, " \
                        "num_mis, total_test\n"
-        classifiers = [NaiveBayesCls, SVMCls, LDACls, QDACls,
-                       DecisionTreeCls, RandomForestCls]
+        #classifiers = [NaiveBayesCls, SVMCls, LDACls, QDACls,
+        #               DecisionTreeCls, RandomForestCls, SVMQuadCls]
         num_trials = 10
         num_folds = 30
 
