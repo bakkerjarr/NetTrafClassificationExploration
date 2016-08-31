@@ -22,6 +22,7 @@ from classifiers.iscx_qda import QDACls
 from classifiers.iscx_decisiontree import DecisionTreeCls
 from classifiers.iscx_random_forest import RandomForestCls
 #from classifiers.iscx_svm_quad import SVMQuadCls
+from classifiers.iscx_knn import KNNCls
 from contextlib import contextmanager
 from data.iscx_ids_2012 import ISCX2012IDS
 from os.path import isfile
@@ -56,7 +57,7 @@ class Classify:
                        "fold_num, TP, TN, FP, FN, TP_rate, FP_rate, " \
                        "num_mis, total_test\n"
         #classifiers = [NaiveBayesCls, SVMCls, LDACls, QDACls,
-        #               DecisionTreeCls, RandomForestCls, SVMQuadCls]
+        #               DecisionTreeCls, RandomForestCls, KNNCls]i
         num_trials = 10
         num_folds = 30
 
@@ -132,6 +133,7 @@ class Classify:
             cur_dt = str(datetime.datetime.now())
             file_out.write("{0}\t Test finished\n".format(cur_dt))
         print("TEST COMPLETE: Exiting...")
+
 
 @contextmanager
 def opened_w_error(filename, mode="r"):
