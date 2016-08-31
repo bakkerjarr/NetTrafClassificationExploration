@@ -22,7 +22,7 @@ __author__ = "Jarrod N. Bakker"
 
 class SVMCls:
 
-    NAME = "SVM"
+    NAME = "SVM_RBF"
 
     def __init__(self, data, labels, skf):
         """Initialise.
