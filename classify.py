@@ -23,6 +23,7 @@ from classifiers.iscx_decisiontree import DecisionTreeCls
 from classifiers.iscx_random_forest import RandomForestCls
 #from classifiers.iscx_svm_quad import SVMQuadCls
 from classifiers.iscx_knn import KNNCls
+from classifiers.iscx_ocsvm_rbf import OcSVMCls
 from contextlib import contextmanager
 from data.iscx_ids_2012 import ISCX2012IDS
 from os.path import isfile
@@ -57,7 +58,8 @@ class Classify:
                        "fold_num, TP, TN, FP, FN, TP_rate, FP_rate, " \
                        "num_mis, total_test\n"
         #classifiers = [NaiveBayesCls, SVMCls, LDACls, QDACls,
-        #               DecisionTreeCls, RandomForestCls, KNNCls]i
+        #               DecisionTreeCls, RandomForestCls, KNNCls]
+        classifiers = [OcSVMCls]
         num_trials = 10
         num_folds = 30
 
