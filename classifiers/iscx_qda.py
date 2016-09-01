@@ -60,7 +60,7 @@ class QDACls:
                                              train)).astype(np_float)
             test_label_array = np_array.array(map(
                 self._labels.__getitem__, train)).astype(np_float)
-            test_size = len(test)
+            test_size = len(train)  # Remember the switch of sets!
             pred = self._classifier.predict(test_array)
             mislabeled = (test_label_array != pred).sum()
             tp, tn, fp, fn = rc.calculate_tpn_fpn(test_label_array, pred)
