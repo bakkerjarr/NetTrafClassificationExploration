@@ -12,17 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from classifiers import iscx_result_calc as rc
-from sklearn import tree
 from numpy import float32 as np_float
+
 import numpy.core.multiarray as np_array
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+
+from priliminary.classifiers import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 
 
-class DecisionTreeCls:
+class QDACls:
 
-    NAME = "Decision_Tree"
+    NAME = "QDA"
 
     def __init__(self, data, labels, skf):
         """Initialise.
@@ -35,10 +37,10 @@ class DecisionTreeCls:
         self._data = data
         self._labels = labels
         self._kfold = skf
-        self._classifier = tree.DecisionTreeClassifier()
+        self._classifier = QuadraticDiscriminantAnalysis()
 
     def classify(self):
-        """Classify DDoS flows using a Decision Tree.
+        """Classify DDoS flows using Quadratic Discriminant Analysis.
 
         The data passed through to the fit() method cannot be a string
         type.
@@ -48,7 +50,7 @@ class DecisionTreeCls:
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:
-            print("\tTraining Decision Tree...")
+            print("\tTraining QDA...")
             # NOTE: I have switched the training and testing set around.
             train_array = np_array.array(map(self._data.__getitem__,
                                              test)).astype(np_float)

@@ -12,17 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from classifiers import iscx_result_calc as rc
-from sklearn.neighbors import KNeighborsClassifier
 from numpy import float32 as np_float
+from sklearn import svm
+
 import numpy.core.multiarray as np_array
+
+from priliminary.classifiers import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 
 
-class KNNCls:
+class SVMCls:
 
-    NAME = "K-Nearest_Neighbours"
+    NAME = "SVM_RBF"
 
     def __init__(self, data, labels, skf):
         """Initialise.
@@ -35,7 +37,7 @@ class KNNCls:
         self._data = data
         self._labels = labels
         self._kfold = skf
-        self._classifier = KNeighborsClassifier()
+        self._classifier = svm.SVC()  # TODO Try LinearSVC
 
     def classify(self):
         """Classify DDoS flows using a Support Vector Machine.
@@ -54,7 +56,7 @@ class KNNCls:
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:
-            print("\tTraining K-Nearest Neighbours...")
+            print("\tTraining SVM...")
             # NOTE: I have switched the training and testing set around.
             train_array = np_array.array(map(self._data.__getitem__,
                                              test)).astype(np_float)

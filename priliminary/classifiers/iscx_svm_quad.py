@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from classifiers import iscx_result_calc as rc
-from sklearn import svm
 from numpy import float32 as np_float
+from sklearn import svm
+
 import numpy.core.multiarray as np_array
+
+from priliminary.classifiers import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 

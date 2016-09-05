@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from data import iscx_ids_2012_features as iscx_features
-
-from lxml import etree
-from sklearn.cross_validation import StratifiedKFold
 import random
+from lxml import etree
+
+from sklearn.cross_validation import StratifiedKFold
+
+from priliminary.data import iscx_ids_2012_features as iscx_features
 
 __author__ = "Jarrod N. Bakker"
 

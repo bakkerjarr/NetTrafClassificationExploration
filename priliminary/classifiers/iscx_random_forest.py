@@ -12,17 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from classifiers import iscx_result_calc as rc
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from numpy import float32 as np_float
+
 import numpy.core.multiarray as np_array
+from sklearn.ensemble import RandomForestClassifier
+
+from priliminary.classifiers import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 
 
-class LDACls:
+class RandomForestCls:
 
-    NAME = "LDA"
+    NAME = "Random_Forest"
 
     def __init__(self, data, labels, skf):
         """Initialise.
@@ -35,10 +37,10 @@ class LDACls:
         self._data = data
         self._labels = labels
         self._kfold = skf
-        self._classifier = LinearDiscriminantAnalysis()
+        self._classifier = RandomForestClassifier()
 
     def classify(self):
-        """Classify DDoS flows using Linear Discriminant Analysis.
+        """Classify DDoS flows using a Decision Tree.
 
         The data passed through to the fit() method cannot be a string
         type.
@@ -48,7 +50,7 @@ class LDACls:
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:
-            print("\tTraining LDA...")
+            print("\tTraining Random Forest...")
             # NOTE: I have switched the training and testing set around.
             train_array = np_array.array(map(self._data.__getitem__,
                                              test)).astype(np_float)

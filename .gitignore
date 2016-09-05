@@ -1,3 +1,5 @@
 *.pyc
 .idea
 *.csv
+results
+test_time.txt
