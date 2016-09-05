@@ -88,7 +88,8 @@ class OcSVMCls:
             test_size = len(train)
             pred = self._classifier.predict(test_array)
             mislabeled = (test_label_array != pred).sum()
-            tp, tn, fp, fn = rc.calculate_tpn_fpn(test_label_array, pred)
+            tp, tn, fp, fn = rc.calculate_tpn_fpn_anom(test_label_array,
+                                                       pred)
             # print("TP: {0}\tTN: {1}\tFP: {2}\tFN: {3}".format(tp, tn,
             #                                                   fp, fn))
             detection_rate = rc.detection_rate(tp, fn)

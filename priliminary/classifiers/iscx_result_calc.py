@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from priliminary.data import TagValue
+from priliminary.data.iscx_ids_2012 import TagValue
 
 __author__ = "Jarrod N. Bakker"
 
@@ -36,6 +36,40 @@ def calculate_tpn_fpn(test_labels, pred):
     fp = 0
     fn = 0
     norm = TagValue.Normal
+    for i in range(test_labels.size):
+        if test_labels[i] == norm:
+            if pred[i] == norm:
+                tn += 1
+            else:
+                fp += 1
+        else:
+            if pred[i] == norm:
+                fn += 1
+            else:
+                tp += 1
+    return tp, tn, fp, fn
+
+
+def calculate_tpn_fpn_anom(test_labels, pred):
+    """Calculate TP, TN, FP and FN for anomaly detection context.
+
+    The difference here is that different values are used for 'class'
+    labels. 1 indicates inliers or normal, -1 indicates outliers or
+    anomalous.
+
+    TP: True positives. TN: True negatives. FP: False positives.
+    FN: False negatives.
+
+    :param test_labels: Actual labels for the test set.
+    :param pred: Predicted labels for the test set.
+    :return: TP, TN, FP, FN as integers in a tuple.
+    """
+    tp = 0
+    tn = 0
+    fp = 0
+    fn = 0
+
+    norm = 1  # an inlier
     for i in range(test_labels.size):
         if test_labels[i] == norm:
             if pred[i] == norm:
