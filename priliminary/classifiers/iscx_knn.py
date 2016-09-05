@@ -40,13 +40,7 @@ class KNNCls:
         self._classifier = KNeighborsClassifier()
 
     def classify(self):
-        """Classify DDoS flows using a Support Vector Machine.
-
-        Note that SVM cannot handle too many data points for training.
-        The exact number however is not currently known... Therefore use
-        the StratifiedKFold object to obtain an even smaller training
-        set. Alternatively, switch the training and testing sets around.
-        It's an ugly hack...
+        """Classify DDoS flows using K-Nearest Neighbours.
         
         The data passed through to the fit() method cannot be a string
         type.
