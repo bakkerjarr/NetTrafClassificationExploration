@@ -59,6 +59,7 @@ class Classify:
                        "num_mis, total_test\n"
         #classifiers = [NaiveBayesCls, SVMCls, LDACls, QDACls,
         #               DecisionTreeCls, RandomForestCls, KNNCls]
+        classifiers = [OcSVMCls]
         num_trials = 10
         num_folds = 30
 

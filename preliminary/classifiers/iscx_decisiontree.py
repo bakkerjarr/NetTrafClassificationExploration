@@ -13,18 +13,18 @@
 # limitations under the License.
 
 from numpy import float32 as np_float
+from sklearn import tree
 
 import numpy.core.multiarray as np_array
-from sklearn.neighbors import KNeighborsClassifier
 
-from priliminary.classifiers import iscx_result_calc as rc
+from preliminary.classifiers import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 
 
-class KNNCls:
+class DecisionTreeCls:
 
-    NAME = "K-Nearest_Neighbours"
+    NAME = "Decision_Tree"
 
     def __init__(self, data, labels, skf):
         """Initialise.
@@ -37,11 +37,11 @@ class KNNCls:
         self._data = data
         self._labels = labels
         self._kfold = skf
-        self._classifier = KNeighborsClassifier()
+        self._classifier = tree.DecisionTreeClassifier()
 
     def classify(self):
-        """Classify DDoS flows using K-Nearest Neighbours.
-        
+        """Classify DDoS flows using a Decision Tree.
+
         The data passed through to the fit() method cannot be a string
         type.
 
@@ -50,7 +50,7 @@ class KNNCls:
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:
-            print("\tTraining K-Nearest Neighbours...")
+            print("\tTraining Decision Tree...")
             # NOTE: I have switched the training and testing set around.
             train_array = np_array.array(map(self._data.__getitem__,
                                              test)).astype(np_float)

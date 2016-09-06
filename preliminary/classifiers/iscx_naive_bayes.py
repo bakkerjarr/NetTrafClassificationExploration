@@ -15,16 +15,16 @@
 from numpy import float32 as np_float
 
 import numpy.core.multiarray as np_array
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.naive_bayes import GaussianNB
 
-from priliminary.classifiers import iscx_result_calc as rc
+from preliminary.classifiers import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 
 
-class LDACls:
+class NaiveBayesCls:
 
-    NAME = "LDA"
+    NAME = "Naive_Bayes"
 
     def __init__(self, data, labels, skf):
         """Initialise.
@@ -37,10 +37,10 @@ class LDACls:
         self._data = data
         self._labels = labels
         self._kfold = skf
-        self._classifier = LinearDiscriminantAnalysis()
+        self._classifier = GaussianNB()
 
     def classify(self):
-        """Classify DDoS flows using Linear Discriminant Analysis.
+        """Classify DDoS flows using Naive Bayes.
 
         The data passed through to the fit() method cannot be a string
         type.
@@ -50,7 +50,7 @@ class LDACls:
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:
-            print("\tTraining LDA...")
+            print("\tTraining Naive Bayes...")
             # NOTE: I have switched the training and testing set around.
             train_array = np_array.array(map(self._data.__getitem__,
                                              test)).astype(np_float)

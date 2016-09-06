@@ -13,18 +13,18 @@
 # limitations under the License.
 
 from numpy import float32 as np_float
-from sklearn import svm
 
 import numpy.core.multiarray as np_array
+from sklearn.ensemble import RandomForestClassifier
 
-from priliminary.classifiers import iscx_result_calc as rc
+from preliminary.classifiers import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 
 
-class SVMQuadCls:
+class RandomForestCls:
 
-    NAME = "SVM_Quad"
+    NAME = "Random_Forest"
 
     def __init__(self, data, labels, skf):
         """Initialise.
@@ -37,17 +37,11 @@ class SVMQuadCls:
         self._data = data
         self._labels = labels
         self._kfold = skf
-        self._classifier = svm.SVC(kernel="poly", degree=2)
+        self._classifier = RandomForestClassifier()
 
     def classify(self):
-        """Classify DDoS flows using a Support Vector Machine.
+        """Classify DDoS flows using a Random Forest.
 
-        Note that SVM cannot handle too many data points for training.
-        The exact number however is not currently known... Therefore use
-        the StratifiedKFold object to obtain an even smaller training
-        set. Alternatively, switch the training and testing sets around.
-        It's an ugly hack...
-        
         The data passed through to the fit() method cannot be a string
         type.
 
@@ -56,7 +50,7 @@ class SVMQuadCls:
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:
-            print("\tTraining SVM with Quadratic kernel...")
+            print("\tTraining Random Forest...")
             # NOTE: I have switched the training and testing set around.
             train_array = np_array.array(map(self._data.__getitem__,
                                              test)).astype(np_float)

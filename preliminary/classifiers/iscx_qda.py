@@ -13,18 +13,18 @@
 # limitations under the License.
 
 from numpy import float32 as np_float
-from sklearn import svm
 
 import numpy.core.multiarray as np_array
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
-from priliminary.classifiers import iscx_result_calc as rc
+from preliminary.classifiers import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 
 
-class SVMCls:
+class QDACls:
 
-    NAME = "SVM_RBF"
+    NAME = "QDA"
 
     def __init__(self, data, labels, skf):
         """Initialise.
@@ -37,17 +37,11 @@ class SVMCls:
         self._data = data
         self._labels = labels
         self._kfold = skf
-        self._classifier = svm.SVC()  # TODO Try LinearSVC
+        self._classifier = QuadraticDiscriminantAnalysis()
 
     def classify(self):
-        """Classify DDoS flows using a Support Vector Machine.
+        """Classify DDoS flows using Quadratic Discriminant Analysis.
 
-        Note that SVM cannot handle too many data points for training.
-        The exact number however is not currently known... Therefore use
-        the StratifiedKFold object to obtain an even smaller training
-        set. Alternatively, switch the training and testing sets around.
-        It's an ugly hack...
-        
         The data passed through to the fit() method cannot be a string
         type.
 
@@ -56,7 +50,7 @@ class SVMCls:
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:
-            print("\tTraining SVM...")
+            print("\tTraining QDA...")
             # NOTE: I have switched the training and testing set around.
             train_array = np_array.array(map(self._data.__getitem__,
                                              test)).astype(np_float)

@@ -18,7 +18,7 @@ from sklearn import svm
 import numpy.core.multiarray as np_array
 from data.iscx_ids_2012 import TagValue
 
-from priliminary.classifiers import iscx_result_calc as rc
+from preliminary.classifiers import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 

@@ -15,16 +15,16 @@
 from numpy import float32 as np_float
 
 import numpy.core.multiarray as np_array
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
-from priliminary.classifiers import iscx_result_calc as rc
+from preliminary.classifiers import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 
 
-class QDACls:
+class LDACls:
 
-    NAME = "QDA"
+    NAME = "LDA"
 
     def __init__(self, data, labels, skf):
         """Initialise.
@@ -37,10 +37,10 @@ class QDACls:
         self._data = data
         self._labels = labels
         self._kfold = skf
-        self._classifier = QuadraticDiscriminantAnalysis()
+        self._classifier = LinearDiscriminantAnalysis()
 
     def classify(self):
-        """Classify DDoS flows using Quadratic Discriminant Analysis.
+        """Classify DDoS flows using Linear Discriminant Analysis.
 
         The data passed through to the fit() method cannot be a string
         type.
@@ -50,7 +50,7 @@ class QDACls:
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:
-            print("\tTraining QDA...")
+            print("\tTraining LDA...")
             # NOTE: I have switched the training and testing set around.
             train_array = np_array.array(map(self._data.__getitem__,
                                              test)).astype(np_float)
