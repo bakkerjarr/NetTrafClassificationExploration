@@ -40,7 +40,7 @@ class RandomForestCls:
         self._classifier = RandomForestClassifier()
 
     def classify(self):
-        """Classify DDoS flows using a Decision Tree.
+        """Classify DDoS flows using a Random Forest.
 
         The data passed through to the fit() method cannot be a string
         type.
