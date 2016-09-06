@@ -17,7 +17,7 @@ from numpy import float32 as np_float
 import numpy.core.multiarray as np_array
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
-from priliminary.classifiers import iscx_result_calc as rc
+from vetted.classifiers import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 

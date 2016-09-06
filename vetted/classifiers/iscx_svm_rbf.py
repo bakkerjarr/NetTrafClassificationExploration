@@ -17,7 +17,7 @@ from sklearn import svm
 
 import numpy.core.multiarray as np_array
 
-from priliminary.classifiers import iscx_result_calc as rc
+from vetted.classifiers import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 
