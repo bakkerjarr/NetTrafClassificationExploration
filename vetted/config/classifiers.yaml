@@ -1,41 +1,41 @@
 # Parameters for Scikit Classifiers
 
 # K-Nearest Neighbours
-knn:
+K-Nearest_Neighbours:
   n_neighbors: 5
   weights: "uniform"
   algorithm: "kd_tree"
   leaf_size: 30
   metric: "minkowski"
   p: 2
-  metric_params: None
+  metric_params: "None"
   n_jobs: 1
 
 # Quadratric Discriminant Analysis
-qda:
-  priors: None
+QDA:
+  priors: "None"
   reg_param: 0.0
 
 # Random Forest
-randfor:
+Random_Forest:
   n_estimators: 10
   criterion: "gini"
-  max_depth: None
+  max_depth: "None"
   min_samples_split: 2
   min_samples_leaf: 1
   min_weight_fraction_leaf: 0.0
   max_features: "auto"
-  max_leaf_nodes: None
+  max_leaf_nodes: "None"
   bootstrap: True
   oob_score: False
   n_jobs: 1
-  random_state: None
+  random_state: "None"
   verbose: 0
   warm_start: False
-  class_weight: None
+  class_weight: "None"
 
 # Support Vector Machine
-svm:
+SVM_RBF:
   C: 1.0
   kernel: "rbf"
   degree: 3
@@ -45,8 +45,8 @@ svm:
   probability: False
   tol: 0.001
   cache_size: 200
-  class_weight: None
+  class_weight: "None"
   verbose: False
   max_iter: -1
-  decision_function_shape: None
-  random_state: None
+  decision_function_shape: "None"
+  random_state: "None"

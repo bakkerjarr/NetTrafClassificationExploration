@@ -26,14 +26,16 @@ class SVMCls:
 
     NAME = "SVM_RBF"
 
-    def __init__(self, data, labels, skf):
+    def __init__(self, config, data, labels, skf):
         """Initialise.
 
+        :param config: Dict of config information for classifiers.
         :param data: Data set for the classifier to use.
         :param labels: Labels indicating if a flow is normal or attack.
         :param skf: StratifiedKFold object representing what data set
         elements belong in each fold.
         """
+        self._config = config[self.NAME]
         self._data = data
         self._labels = labels
         self._kfold = skf
@@ -52,7 +54,21 @@ class SVMCls:
 
         :return: Results of the classification.
         """
-        classifier = svm.SVC()
+        classifier = svm.SVC(C=self._config["C"], kernel=self._config[
+            "kernel"], degree=self._config["degree"],
+                             gamma=self._config["gamma"],
+                             coef0=self._config["coef0"],
+                             shrinking=self._config["shrinking"],
+                             probability=self._config["probability"],
+                             tol=self._config["tol"],
+                             cache_size=self._config["cache_size"],
+                             class_weight=self._config[
+                                 "class_weight"],
+                             verbose=self._config["verbose"],
+                             max_iter=self._config["max_iter"],
+                             decision_function_shape=self._config[
+                                 "decision_function_shape"],
+                             random_state=self._config["random_state"])
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:

@@ -26,27 +26,52 @@ class RandomForestCls:
 
     NAME = "Random_Forest"
 
-    def __init__(self, data, labels, skf):
+    def __init__(self, config, data, labels, skf):
         """Initialise.
 
+        :param config: Dict of config information for classifiers.
         :param data: Data set for the classifier to use.
         :param labels: Labels indicating if a flow is normal or attack.
         :param skf: StratifiedKFold object representing what data set
         elements belong in each fold.
         """
+        self._config = config[self.NAME]
         self._data = data
         self._labels = labels
         self._kfold = skf
 
     def classify(self):
-        """Classify DDoS flows using a Decision Tree.
+        """Classify DDoS flows using a Random Forest.
 
         The data passed through to the fit() method cannot be a string
         type.
 
         :return: Results of the classification.
         """
-        classifier = RandomForestClassifier()
+        classifier = RandomForestClassifier(n_estimators=self._config[
+            "n_estimators"], criterion=self._config["criterion"],
+                                            max_depth=self._config[
+                                                "max_depth"],
+                                            min_samples_split=self._config["min_samples_split"],
+                                            min_samples_leaf=self._config["min_samples_leaf"],
+                                            min_weight_fraction_leaf=self._config["min_weight_fraction_leaf"],
+                                            max_features=self._config[
+                                                "max_features"],
+                                            max_leaf_nodes=self._config["max_leaf_nodes"],
+                                            bootstrap=self._config[
+                                                "bootstrap"],
+                                            oob_score=self._config[
+                                                "oob_score"],
+                                            n_jobs=self._config[
+                                                "n_jobs"],
+                                            random_state=self._config[
+                                                "random_state"],
+                                            verbose=self._config[
+                                                "verbose"],
+                                            warm_start=self._config[
+                                                "warm_start"],
+                                            class_weight=self._config[
+                                                "class_weight"])
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:

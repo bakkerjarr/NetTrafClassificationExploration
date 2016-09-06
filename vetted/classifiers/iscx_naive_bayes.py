@@ -26,14 +26,16 @@ class NaiveBayesCls:
 
     NAME = "Naive_Bayes"
 
-    def __init__(self, data, labels, skf):
+    def __init__(self, config, data, labels, skf):
         """Initialise.
 
+        :param config: Dict of config information for classifiers.
         :param data: Data set for the classifier to use.
         :param labels: Labels indicating if a flow is normal or attack.
         :param skf: StratifiedKFold object representing what data set
         elements belong in each fold.
         """
+        self._config = None  # sklearn's Naive Bayes has no parameters
         self._data = data
         self._labels = labels
         self._kfold = skf
@@ -66,14 +68,8 @@ class NaiveBayesCls:
             pred = classifier.predict(test_array)
             mislabeled = (test_label_array != pred).sum()
             tp, tn, fp, fn = rc.calculate_tpn_fpn(test_label_array, pred)
-            # print("TP: {0}\tTN: {1}\tFP: {2}\tFN: {3}".format(tp, tn,
-            #                                                   fp, fn))
             detection_rate = rc.detection_rate(tp, fn)
             false_pos_rate = rc.false_positive_rate(tn, fp)
-            # print("Detection rate: {0}\tFalse positive rate: "
-            #       "{1}".format(detection_rate, false_pos_rate))
-            # print("Number of mislabelled points out of a total {0} "
-            #       "points : {1}".format(test_size, mislabeled))
             all_results.append([fold_num, tp, tn, fp, fn, detection_rate,
                                 false_pos_rate, mislabeled, test_size])
             fold_num += 1

@@ -15,13 +15,15 @@
 """Load data from a data set then pass it to a classifier.
 """
 
+from config_loader import ConfigLoader
 from classifiers.iscx_knn import KNNCls
 from classifiers.iscx_naive_bayes import NaiveBayesCls
 from classifiers.iscx_qda import QDACls
 from classifiers.iscx_random_forest import RandomForestCls
 from classifiers.iscx_svm_rbf import SVMCls
 from data.iscx_ids_2012 import ISCX2012IDS
-from os.path import isfile
+
+from os import path
 import datetime
 import sys
 
@@ -32,11 +34,21 @@ class Classify:
     """Main class.
     """
 
-    def __init__(self, dataset_files):
+    _CONFIG_DIR = "config"
+    _TEST_DEBUG = "test_time.txt"
+    _WORKING_DIR = path.dirname(__file__)
+
+    def __init__(self, config_file_name, dataset_files):
         """Initialise the program.
 
+        :param config_file_name: Name of the config file.
         :param dataset_files: List of dataset file names.
         """
+        self._config_file_path = path.join(self._WORKING_DIR,
+                                           self._CONFIG_DIR,
+                                           config_file_name)
+        self._config_loader = ConfigLoader(self._config_file_path)
+        self._config_loader.read_config()
         self._dataset_files = dataset_files
         self._iscx2012_loader = ISCX2012IDS(dataset_files)
 
@@ -45,7 +57,7 @@ class Classify:
 
         :return: ?
         """
-        with open("test_time.txt", mode="a") as file_out:
+        with open(self._TEST_DEBUG, mode="a") as file_out:
             cur_dt = str(datetime.datetime.now())
             file_out.write("{0}\tTest started\n".format(cur_dt))
 
@@ -63,7 +75,7 @@ class Classify:
 
         features_set, labels = self._iscx2012_loader.get_data()
 
-        with open("test_time.txt", mode="a") as file_out:
+        with open(self._TEST_DEBUG, mode="a") as file_out:
             cur_dt = str(datetime.datetime.now())
             file_out.write("{0}\t\tTesting classifiers: ".format(cur_dt))
             for i in range(len(classifiers)):
@@ -85,31 +97,33 @@ class Classify:
                 print("Testing features [{0}] with {1}.".format(
                     features, cls))
                 seed = 99999999
-                file_name = "{0}_{1}-fold_results.csv".format(
+                result_file = "{0}_{1}-fold_results.csv".format(
                     cls.NAME, num_folds)
                 # If the results file does not exist we should create
                 # one and write a header to it.
-                if not isfile(file_name):
-                    print("Creating file: {0}".format(file_name))
-                    with open(file_name, mode="w") as new_file:
+                if not path.isfile(result_file):
+                    print("Creating file: {0}".format(result_file))
+                    with open(result_file, mode="w") as new_file:
                         new_file.write(csv_headings)
                 for trial_num in range(1, num_trials+1):
                     skf = self._iscx2012_loader.get_kfold(num_folds,
                                                           seed)
                     # create the classifier, pass the data through
                     # call classify
-                    results = cls(features_set[features],
-                                  labels, skf).classify()
+                    results = cls(
+                        self._config_loader.get_classifier_config(),
+                        features_set[features], labels, skf).classify()
                     print("\tWriting results for trial {0}.".format(
                         trial_num))
                     try:
-                        with open("test_time.txt", mode="a") as file_out:
+                        with open(self._TEST_DEBUG, mode="a") as \
+                                file_out:
                             cur_dt = str(datetime.datetime.now())
                             file_out.write("{0}\t\tWriting "
                                            "test results to "
                                            "file: {1}\n".format(
-                                            cur_dt, file_name))
-                        file_out = open(file_name, mode="a")
+                                            cur_dt, result_file))
+                        file_out = open(result_file, mode="a")
                         for r in results:
                             line = "{0}, {1}, {2}, {3}, {4}\n".format(
                                 cls.NAME, features, seed, trial_num,
@@ -118,22 +132,23 @@ class Classify:
                     except IOError as err:
                         print("IOError writing results to file: "
                               "{0}".format(err))
-                        with open("test_time.txt", mode="a") as err_out:
+                        with open(self._TEST_DEBUG, mode="a") as err_out:
                             cur_dt = str(datetime.datetime.now())
                             err_out.write("{0}\t\tIOError writing "
                                           "results to file: "
                                           "{1}\n".format(cur_dt, err))
                     seed += 1
 
-        with open("test_time.txt", mode="a") as file_out:
+        with open(self._TEST_DEBUG, mode="a") as file_out:
             cur_dt = str(datetime.datetime.now())
             file_out.write("{0}\t Test finished\n".format(cur_dt))
         print("TEST COMPLETE: Exiting...")
 
 
 if __name__ == "__main__":
+    config_file_name = "classifiers.yaml"
     files = ["TestbedTueJun15-1Flows.xml",
              "TestbedTueJun15-2Flows.xml",
              "TestbedTueJun15-3Flows.xml"]
-    c = Classify(files)
+    c = Classify(config_file_name, files)
     c.run_tests()

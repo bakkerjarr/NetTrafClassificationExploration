@@ -17,7 +17,7 @@ from lxml import etree
 
 from sklearn.cross_validation import StratifiedKFold
 
-from priliminary.data import iscx_ids_2012_features as iscx_features
+from vetted.data import iscx_ids_2012_features as iscx_features
 
 __author__ = "Jarrod N. Bakker"
 
