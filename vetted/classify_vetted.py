@@ -57,9 +57,9 @@ class Classify:
 
         :return: ?
         """
-        with open(self._TEST_DEBUG, mode="a") as file_out:
+        with open(self._TEST_DEBUG, mode="a") as f_debug:
             cur_dt = str(datetime.datetime.now())
-            file_out.write("{0}\tTest started\n".format(cur_dt))
+            f_debug.write("{0}\tTest started\n".format(cur_dt))
 
         csv_headings = "classifier, features, seed, trial_num, " \
                        "fold_num, TP, TN, FP, FN, TP_rate, FP_rate, " \
@@ -75,22 +75,22 @@ class Classify:
 
         features_set, labels = self._iscx2012_loader.get_data()
 
-        with open(self._TEST_DEBUG, mode="a") as file_out:
+        with open(self._TEST_DEBUG, mode="a") as f_debug:
             cur_dt = str(datetime.datetime.now())
-            file_out.write("{0}\t\tTesting classifiers: ".format(cur_dt))
+            f_debug.write("{0}\t\tTesting classifiers: ".format(cur_dt))
             for i in range(len(classifiers)):
                 if i != len(classifiers)-1:
-                    file_out.write("{0}, ".format(classifiers[i].NAME))
+                    f_debug.write("{0}, ".format(classifiers[i].NAME))
                 else:
-                    file_out.write("{0}\n".format(classifiers[i].NAME))
+                    f_debug.write("{0}\n".format(classifiers[i].NAME))
             cur_dt = str(datetime.datetime.now())
-            file_out.write("{0}\t\tFeature sets: ".format(cur_dt))
+            f_debug.write("{0}\t\tFeature sets: ".format(cur_dt))
             fs_names = features_set.keys()
             for i in range(len(fs_names)):
                 if i != len(fs_names)-1:
-                    file_out.write("{0}, ".format(fs_names[i]))
+                    f_debug.write("{0}, ".format(fs_names[i]))
                 else:
-                    file_out.write("{0}\n".format(fs_names[i]))
+                    f_debug.write("{0}\n".format(fs_names[i]))
 
         for features in features_set:
             for cls in classifiers:
@@ -103,8 +103,8 @@ class Classify:
                 # one and write a header to it.
                 if not path.isfile(result_file):
                     print("Creating file: {0}".format(result_file))
-                    with open(result_file, mode="w") as new_file:
-                        new_file.write(csv_headings)
+                    with open(result_file, mode="w") as f_results:
+                        f_results.write(csv_headings)
                 for trial_num in range(1, num_trials+1):
                     skf = self._iscx2012_loader.get_kfold(num_folds,
                                                           seed)
@@ -117,31 +117,35 @@ class Classify:
                         trial_num))
                     try:
                         with open(self._TEST_DEBUG, mode="a") as \
-                                file_out:
+                                f_debug:
                             cur_dt = str(datetime.datetime.now())
-                            file_out.write("{0}\t\tWriting "
-                                           "test results to "
-                                           "file: {1}\n".format(
-                                            cur_dt, result_file))
-                        file_out = open(result_file, mode="a")
+                            f_debug.write("{0}\t\tWriting "
+                                            "test results to "
+                                            "file: {1}\tfeatures:{2}"
+                                            "\ttrial: {3}\n".format(
+                                             cur_dt, result_file,
+                                             features, trial_num))
+                        f_results = open(result_file, mode="a")
                         for r in results:
                             line = "{0}, {1}, {2}, {3}, {4}\n".format(
                                 cls.NAME, features, seed, trial_num,
                                 str(r)[1:-1])
-                            file_out.write(line)
+                            f_results.write(line)
                     except IOError as err:
                         print("IOError writing results to file: "
                               "{0}".format(err))
-                        with open(self._TEST_DEBUG, mode="a") as err_out:
+                        with open(self._TEST_DEBUG, mode="a") as f_debug:
                             cur_dt = str(datetime.datetime.now())
-                            err_out.write("{0}\t\tIOError writing "
+                            f_debug.write("{0}\t\tIOError writing "
                                           "results to file: "
                                           "{1}\n".format(cur_dt, err))
+                    finally:
+                        f_results.close()
                     seed += 1
 
-        with open(self._TEST_DEBUG, mode="a") as file_out:
+        with open(self._TEST_DEBUG, mode="a") as f_debug:
             cur_dt = str(datetime.datetime.now())
-            file_out.write("{0}\t Test finished\n".format(cur_dt))
+            f_debug.write("{0}\t Test finished\n".format(cur_dt))
         print("TEST COMPLETE: Exiting...")
 
 
