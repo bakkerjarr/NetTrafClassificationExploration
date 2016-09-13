@@ -153,19 +153,18 @@ class ISCX2012IDS:
         """
         print("Processing features from data...")
         feature_set = {}
-        feature_set["TotalSourceBytes TotalDestinationBytes"] = \
-            iscx_features.src_bytes_dst_bytes(dataset)
-        feature_set["TotalSourceBytes TotalSourcePackets"] = \
-            iscx_features.src_bytes_src_pckts(dataset)
-        feature_set["SourceBytes-per-Packet " \
-                    "DestinationBytes-per-Packet"] = \
-            iscx_features.src_bpp_dst_bpp(dataset)
-        feature_set["SourceBytes FlowDuration"] = \
-            iscx_features.src_bytes_flow_duration(dataset)
-        feature_set["log(SourceBytes) FlowDuration"] = \
-            iscx_features.log_src_bytes_flow_duration(dataset)
-        feature_set["SourceBytes log(FlowDuration)"] = \
-            iscx_features.src_bytes_log_flow_duration(dataset)
+        feature_set["totalSourceBytes totalSourcePackets " \
+                    "FlowDuration"] = iscx_features.tsb_tsp_fl(dataset)
+        feature_set["log(totalSourceBytes) totalSourcePackets " \
+                    "FlowDuration"] = iscx_features.ltsb_tsp_fl(dataset)
+        feature_set["log(totalSourceBytes) log(totalSourcePackets) " \
+                    "FlowDuration"] = iscx_features.ltsb_ltsp_fl(dataset)
+        feature_set["totalSourceBytes totalDestinationBytes " \
+                    "FlowDuration"] = iscx_features.tsb_tdb_fl(dataset)
+        feature_set["totalSourceBytes totalSourcePackets " \
+                    "totalDestinationBytes totalDestinationPackets" \
+                    "FlowDuration"] = \
+            iscx_features.tsb_tsp_tdb_tdp_fl(dataset)
         return feature_set
 
 

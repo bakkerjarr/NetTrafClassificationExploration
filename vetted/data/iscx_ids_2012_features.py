@@ -23,7 +23,8 @@ __author__ = "Jarrod N. Bakker"
 
 
 def src_bytes_dst_bytes(data):
-    """Return the totalSourceBytes and totalDestinationBytes.
+    """Return the totalSourceBytes and totalDestinationBytes as a
+    feature set.
 
     :param data: The data set to manipulate.
     :return: List of the transformed features.
@@ -33,71 +34,8 @@ def src_bytes_dst_bytes(data):
     return _return_features(data, features)
 
 
-def src_bytes_src_pckts(data):
-    """Return the totalSourceBytes and totalSourcePackets.
-
-    :param data: The data set to manipulate.
-    :return: List of the transformed features.
-    """
-    print("\tTotal Source Bytes, Total Source Packets")
-    features = ["totalSourceBytes", "totalSourcePackets"]
-    return _return_features(data, features)
-
-
-def src_bpp_dst_bpp(data):
-    """Return the source bytes per packet and destination bytes per
-    packet.
-
-    :param data: The data set to manipulate.
-    :return: List of the transformed features.
-    """
-    print("\tSource Bytes per Packet, Destination Bytes per Packet")
-    features = ["totalSourceBytes", "totalSourcePackets",
-                "totalDestinationBytes", "totalDestinationPackets"]
-    selected_data = _return_features(data, features)
-    transf_data = []
-    for flow in selected_data:
-        new_entry = []
-        src_bp_ratio = 0
-        try:
-            src_bp_ratio = float(flow[0])/float(flow[1])
-        except ZeroDivisionError:
-            pass
-        new_entry.append(src_bp_ratio)
-        dst_bp_ratio = 0
-        try:
-            dst_bp_ratio = float(flow[2])/float(flow[3])
-        except ZeroDivisionError:
-            pass
-        new_entry.append(dst_bp_ratio)
-        transf_data.append(new_entry)
-    return transf_data
-
-
-def src_bytes_flow_duration(data):
-    """Return the source bytes and flow duration.
-
-    :param data: The data set to manipulate.
-    :return: List of the transformed features.
-    """
-    print("\tSource Bytes, Flow Duration")
-    features = ["totalSourceBytes", "startDateTime", "stopDateTime"]
-    selected_data = _return_features(data, features)
-    transf_data = []
-    for flow in selected_data:
-        new_entry = []
-        src_bytes = float(flow[0])
-        new_entry.append(src_bytes)
-        start_dt = datetime.strptime(flow[1], "%Y-%m-%dT%H:%M:%S")
-        stop_dt = datetime.strptime(flow[2], "%Y-%m-%dT%H:%M:%S")
-        duration = (stop_dt-start_dt).seconds
-        new_entry.append(duration)
-        transf_data.append(new_entry)
-    return transf_data
-
-
 def log_src_bytes_flow_duration(data):
-    """Return the log(source bytes) and flow duration.
+    """Return the log(source bytes) and flow duration as a feature set.
 
     :param data: The data set to manipulate.
     :return: List of the transformed features.
@@ -122,27 +60,135 @@ def log_src_bytes_flow_duration(data):
     return transf_data
 
 
-def src_bytes_log_flow_duration(data):
-    """Return the log(source bytes) and flow duration.
+def tsb_tsp_fl(data):
+    """Return the totalSourceBytes, totalSourcePackets and flow
+    duration as a feature set.
 
     :param data: The data set to manipulate.
     :return: List of the transformed features.
     """
-    print("\tSource Bytes, log(Flow Duration)")
-    features = ["totalSourceBytes", "startDateTime", "stopDateTime"]
+    print("\ttotalSourceBytes, totalSourcePackets, Flow Duration")
+    features = ["totalSourceBytes", "totalSourcePackets",
+                "startDateTime", "stopDateTime"]
+    selected_data = _return_features(data, features)
+    transf_data = []
+    for flow in selected_data:
+        new_entry = flow[0:2]  # copy in the first 2 elements
+        start_dt = datetime.strptime(flow[2], "%Y-%m-%dT%H:%M:%S")
+        stop_dt = datetime.strptime(flow[3], "%Y-%m-%dT%H:%M:%S")
+        duration = (stop_dt-start_dt).seconds
+        new_entry.append(duration)
+        transf_data.append(new_entry)
+    return transf_data
+
+
+def ltsb_tsp_fl(data):
+    """Return the log(totalSourceBytes), totalSourcePackets and flow
+    duration as a feature set.
+
+    :param data: The data set to manipulate.
+    :return: List of the transformed features.
+    """
+    print("\tlog(totalSourceBytes), totalSourcePackets, Flow Duration")
+    features = ["totalSourceBytes", "totalSourcePackets",
+                "startDateTime", "stopDateTime"]
     selected_data = _return_features(data, features)
     transf_data = []
     for flow in selected_data:
         new_entry = []
-        src_bytes = float(flow[0])
-        new_entry.append(src_bytes)
-        start_dt = datetime.strptime(flow[1], "%Y-%m-%dT%H:%M:%S")
-        stop_dt = datetime.strptime(flow[2], "%Y-%m-%dT%H:%M:%S")
-        duration = 0
+        src_bytes = 0
         try:
-            duration = math.log((stop_dt-start_dt).seconds)
+            src_bytes = math.log(float(flow[0]))
         except ValueError:
             pass
+        new_entry.append(src_bytes)
+        new_entry.append(flow[1])
+        start_dt = datetime.strptime(flow[2], "%Y-%m-%dT%H:%M:%S")
+        stop_dt = datetime.strptime(flow[3], "%Y-%m-%dT%H:%M:%S")
+        duration = (stop_dt-start_dt).seconds
+        new_entry.append(duration)
+        transf_data.append(new_entry)
+    return transf_data
+
+
+def ltsb_ltsp_fl(data):
+    """Return the log(totalSourceBytes), log(totalSourcePackets) and
+    flow duration as a feature set.
+
+    :param data: The data set to manipulate.
+    :return: List of the transformed features.
+    """
+    print("\tlog(totalSourceBytes), log(totalSourcePackets), Flow "
+          "Duration")
+    features = ["totalSourceBytes", "totalSourcePackets",
+                "startDateTime", "stopDateTime"]
+    selected_data = _return_features(data, features)
+    transf_data = []
+    for flow in selected_data:
+        new_entry = []
+        src_bytes = 0
+        try:
+            src_bytes = math.log(float(flow[0]))
+        except ValueError:
+            pass
+        new_entry.append(src_bytes)
+        src_pckts = 0
+        try:
+            src_pckts = math.log(float(flow[1]))
+        except ValueError:
+            pass
+        new_entry.append(src_pckts)
+        start_dt = datetime.strptime(flow[2], "%Y-%m-%dT%H:%M:%S")
+        stop_dt = datetime.strptime(flow[3], "%Y-%m-%dT%H:%M:%S")
+        duration = (stop_dt-start_dt).seconds
+        new_entry.append(duration)
+        transf_data.append(new_entry)
+    return transf_data
+
+
+def tsb_tdb_fl(data):
+    """Return the totalSourceBytes, totalDestinationBytes and flow
+    duration as a feature set.
+
+    :param data: The data set to manipulate.
+    :return: List of the transformed features.
+    """
+    print("\ttotalSourceBytes, totalDestinationBytes, Flow Duration")
+    features = ["totalSourceBytes", "totalDestinationBytes",
+                "startDateTime", "stopDateTime"]
+    selected_data = _return_features(data, features)
+    transf_data = []
+    for flow in selected_data:
+        new_entry = flow[0:2]  # copy in the first 2 elements
+        start_dt = datetime.strptime(flow[2], "%Y-%m-%dT%H:%M:%S")
+        stop_dt = datetime.strptime(flow[3], "%Y-%m-%dT%H:%M:%S")
+        duration = (stop_dt-start_dt).seconds
+        new_entry.append(duration)
+        transf_data.append(new_entry)
+    return transf_data
+
+
+def tsb_tsp_tdb_tdp_fl(data):
+    """Return the totalSourceBytes, totalSourcePackets,
+    totalDestinationBytes, totalDestinationPackets and flow duration
+    as a feature set.
+
+    :param data: The data set to manipulate.
+    :return: List of the transformed features.
+    """
+    print("\ttotalSourceBytes, totalSourcePackets, "
+          "totalDestinationBytes, totalDestinationPackets, "
+          "Flow Duration")
+    features = ["totalSourceBytes", "totalSourcePackets",
+                "totalDestinationBytes", "totalDestinationPackets",
+                "startDateTime", "stopDateTime"]
+    selected_data = _return_features(data, features)
+    transf_data = []
+    for flow in selected_data:
+        new_entry = flow[0:4]  # copy in the first 4 elements
+        start_dt = datetime.strptime(flow[4], "%Y-%m-%dT%H:%M:%S")
+        stop_dt = datetime.strptime(flow[5], "%Y-%m-%dT%H:%M:%S")
+        duration = (stop_dt-start_dt).seconds
         new_entry.append(duration)
         transf_data.append(new_entry)
     return transf_data
@@ -153,7 +199,8 @@ def _return_features(data, features):
 
     :param data: The data set to manipulate.
     :param features: A list of ISXC 2012 IDS specific features.
-    :return: List of data with just the chosen features.
+    :return: List of data with just the chosen features in the order
+             they were requested.
     """
     processed_data = []
     for flow in data:
