@@ -29,7 +29,7 @@ def src_bytes_dst_bytes(data):
     :param data: The data set to manipulate.
     :return: List of the transformed features.
     """
-    print("\tTotal Source Bytes, Total Destination Bytes")
+    print("\ttotalSourceBytes, totalDestinationBytes")
     features = ["totalSourceBytes", "totalDestinationBytes"]
     return _return_features(data, features)
 
@@ -40,7 +40,7 @@ def log_src_bytes_flow_duration(data):
     :param data: The data set to manipulate.
     :return: List of the transformed features.
     """
-    print("\tlog(Source Bytes), Flow Duration")
+    print("\tlog(totalSourceBytes), FlowDuration")
     features = ["totalSourceBytes", "startDateTime", "stopDateTime"]
     selected_data = _return_features(data, features)
     transf_data = []
@@ -67,7 +67,7 @@ def tsb_tsp_fl(data):
     :param data: The data set to manipulate.
     :return: List of the transformed features.
     """
-    print("\ttotalSourceBytes, totalSourcePackets, Flow Duration")
+    print("\ttotalSourceBytes, totalSourcePackets, FlowDuration")
     features = ["totalSourceBytes", "totalSourcePackets",
                 "startDateTime", "stopDateTime"]
     selected_data = _return_features(data, features)
@@ -89,7 +89,7 @@ def ltsb_tsp_fl(data):
     :param data: The data set to manipulate.
     :return: List of the transformed features.
     """
-    print("\tlog(totalSourceBytes), totalSourcePackets, Flow Duration")
+    print("\tlog(totalSourceBytes), totalSourcePackets, FlowDuration")
     features = ["totalSourceBytes", "totalSourcePackets",
                 "startDateTime", "stopDateTime"]
     selected_data = _return_features(data, features)
@@ -118,7 +118,7 @@ def ltsb_ltsp_fl(data):
     :param data: The data set to manipulate.
     :return: List of the transformed features.
     """
-    print("\tlog(totalSourceBytes), log(totalSourcePackets), Flow "
+    print("\tlog(totalSourceBytes), log(totalSourcePackets), Flow"
           "Duration")
     features = ["totalSourceBytes", "totalSourcePackets",
                 "startDateTime", "stopDateTime"]
@@ -153,7 +153,7 @@ def tsb_tdb_fl(data):
     :param data: The data set to manipulate.
     :return: List of the transformed features.
     """
-    print("\ttotalSourceBytes, totalDestinationBytes, Flow Duration")
+    print("\ttotalSourceBytes, totalDestinationBytes, FlowDuration")
     features = ["totalSourceBytes", "totalDestinationBytes",
                 "startDateTime", "stopDateTime"]
     selected_data = _return_features(data, features)
@@ -178,7 +178,7 @@ def tsb_tsp_tdb_tdp_fl(data):
     """
     print("\ttotalSourceBytes, totalSourcePackets, "
           "totalDestinationBytes, totalDestinationPackets, "
-          "Flow Duration")
+          "FlowDuration")
     features = ["totalSourceBytes", "totalSourcePackets",
                 "totalDestinationBytes", "totalDestinationPackets",
                 "startDateTime", "stopDateTime"]
