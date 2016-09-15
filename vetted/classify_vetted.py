@@ -120,11 +120,11 @@ class Classify:
                                 f_debug:
                             cur_dt = str(datetime.datetime.now())
                             f_debug.write("{0}\t\tWriting "
-                                            "test results to "
-                                            "file: {1}\tfeatures:{2}"
-                                            "\ttrial: {3}\n".format(
-                                             cur_dt, result_file,
-                                             features, trial_num))
+                                          "test results to "
+                                          "file: {1}\tfeatures:{2}"
+                                          "\ttrial: {3}\n".format(
+                                           cur_dt, result_file,
+                                           features, trial_num))
                         f_results = open(result_file, mode="a")
                         for r in results:
                             line = "{0}, {1}, {2}, {3}, {4}\n".format(
