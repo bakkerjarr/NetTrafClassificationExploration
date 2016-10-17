@@ -162,7 +162,7 @@ class ISCX2012IDS:
         feature_set["totalSourceBytes totalDestinationBytes " \
                     "FlowDuration"] = iscx_features.tsb_tdb_fl(dataset)
         feature_set["totalSourceBytes totalSourcePackets " \
-                    "totalDestinationBytes totalDestinationPackets" \
+                    "totalDestinationBytes totalDestinationPackets " \
                     "FlowDuration"] = \
             iscx_features.tsb_tsp_tdb_tdp_fl(dataset)
         return feature_set
