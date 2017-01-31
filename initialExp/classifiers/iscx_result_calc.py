@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from preliminary.data.iscx_ids_2012 import TagValue
+from data.iscx_ids_2012 import TagValue
 
 __author__ = "Jarrod N. Bakker"
 

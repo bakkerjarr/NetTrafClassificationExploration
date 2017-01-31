@@ -21,10 +21,7 @@ from classifiers.iscx_lda import LDACls
 from classifiers.iscx_qda import QDACls
 from classifiers.iscx_decisiontree import DecisionTreeCls
 from classifiers.iscx_random_forest import RandomForestCls
-#from classifiers.iscx_svm_quad import SVMQuadCls
 from classifiers.iscx_knn import KNNCls
-from classifiers.iscx_ocsvm_rbf import OcSVMCls
-from contextlib import contextmanager
 from data.iscx_ids_2012 import ISCX2012IDS
 from os.path import isfile
 import datetime
@@ -55,9 +52,8 @@ class Classify:
         csv_headings = "classifier, features, seed, trial_num, " \
                        "fold_num, TP, TN, FP, FN, TP_rate, FP_rate, " \
                        "num_mis, total_test\n"
-        #classifiers = [NaiveBayesCls, SVMCls, LDACls, QDACls,
-        #               DecisionTreeCls, RandomForestCls, KNNCls]
-        classifiers = [OcSVMCls]
+        classifiers = [NaiveBayesCls, SVMCls, LDACls, QDACls,
+                       DecisionTreeCls, RandomForestCls, KNNCls]
         num_trials = 10
         num_folds = 30
 
@@ -134,27 +130,6 @@ class Classify:
             file_out.write("{0}\t Test finished\n".format(cur_dt))
         print("TEST COMPLETE: Exiting...")
 
-
-@contextmanager
-def opened_w_error(filename, mode="r"):
-    """A useful helper function for handling exceptions with the
-    'with' statement.
-    Taken from http://stackoverflow.com/questions/713794/catching-an
-    -exception-while-using-a-python-with-statement/6090497#6090497.
-
-    :param filename:
-    :param mode:
-    :return:
-    """
-    try:
-        f = open(filename, mode)
-    except IOError, err:
-        yield None, err
-    else:
-        try:
-            yield f, None
-        finally:
-            f.close()
 
 if __name__ == "__main__":
     files = ["TestbedTueJun15-1Flows.xml",
