@@ -47,8 +47,6 @@ class Classify:
 
     def run_tests(self):
         """Test a bunch of classifiers.
-
-        :return: ?
         """
         with open("test_time.txt", mode="a") as file_out:
             cur_dt = str(datetime.datetime.now())
