@@ -15,16 +15,16 @@
 from numpy import float32 as np_float
 
 import numpy.core.multiarray as np_array
-from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier
 
-from vetted.classifiers import iscx_result_calc as rc
+import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 
 
-class NaiveBayesCls:
+class RandomForestCls:
 
-    NAME = "Naive_Bayes"
+    NAME = "Random_Forest"
 
     def __init__(self, config, data, labels, skf):
         """Initialise.
@@ -35,24 +35,47 @@ class NaiveBayesCls:
         :param skf: StratifiedKFold object representing what data set
         elements belong in each fold.
         """
-        self._config = None  # sklearn's Naive Bayes has no parameters
+        self._config = config[self.NAME]
         self._data = data
         self._labels = labels
         self._kfold = skf
 
     def classify(self):
-        """Classify DDoS flows using Naive Bayes.
+        """Classify DDoS flows using a Random Forest.
 
         The data passed through to the fit() method cannot be a string
         type.
 
         :return: Results of the classification.
         """
-        classifier = GaussianNB()
+        classifier = RandomForestClassifier(n_estimators=self._config[
+            "n_estimators"], criterion=self._config["criterion"],
+                                            max_depth=self._config[
+                                                "max_depth"],
+                                            min_samples_split=self._config["min_samples_split"],
+                                            min_samples_leaf=self._config["min_samples_leaf"],
+                                            min_weight_fraction_leaf=self._config["min_weight_fraction_leaf"],
+                                            max_features=self._config[
+                                                "max_features"],
+                                            max_leaf_nodes=self._config["max_leaf_nodes"],
+                                            bootstrap=self._config[
+                                                "bootstrap"],
+                                            oob_score=self._config[
+                                                "oob_score"],
+                                            n_jobs=self._config[
+                                                "n_jobs"],
+                                            random_state=self._config[
+                                                "random_state"],
+                                            verbose=self._config[
+                                                "verbose"],
+                                            warm_start=self._config[
+                                                "warm_start"],
+                                            class_weight=self._config[
+                                                "class_weight"])
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:
-            print("\tTraining Naive Bayes...")
+            print("\tTraining Random Forest...")
             # NOTE: I have switched the training and testing set around.
             train_array = np_array.array(map(self._data.__getitem__,
                                              test)).astype(np_float)

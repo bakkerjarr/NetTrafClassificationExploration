@@ -13,18 +13,18 @@
 # limitations under the License.
 
 from numpy import float32 as np_float
-from sklearn import svm
 
 import numpy.core.multiarray as np_array
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
-from vetted.classifiers import iscx_result_calc as rc
+import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 
 
-class SVMCls:
+class QDACls:
 
-    NAME = "SVM_RBF"
+    NAME = "QDA"
 
     def __init__(self, config, data, labels, skf):
         """Initialise.
@@ -41,38 +41,20 @@ class SVMCls:
         self._kfold = skf
 
     def classify(self):
-        """Classify DDoS flows using a Support Vector Machine.
+        """Classify DDoS flows using Quadratic Discriminant Analysis.
 
-        Note that SVM cannot handle too many data points for training.
-        The exact number however is not currently known... Therefore use
-        the StratifiedKFold object to obtain an even smaller training
-        set. Alternatively, switch the training and testing sets around.
-        It's an ugly hack...
-        
         The data passed through to the fit() method cannot be a string
         type.
 
         :return: Results of the classification.
         """
-        classifier = svm.SVC(C=self._config["C"], kernel=self._config[
-            "kernel"], degree=self._config["degree"],
-                             gamma=self._config["gamma"],
-                             coef0=self._config["coef0"],
-                             shrinking=self._config["shrinking"],
-                             probability=self._config["probability"],
-                             tol=self._config["tol"],
-                             cache_size=self._config["cache_size"],
-                             class_weight=self._config[
-                                 "class_weight"],
-                             verbose=self._config["verbose"],
-                             max_iter=self._config["max_iter"],
-                             decision_function_shape=self._config[
-                                 "decision_function_shape"],
-                             random_state=self._config["random_state"])
+        classifier = QuadraticDiscriminantAnalysis(
+            priors=self._config["priors"], reg_param=self._config[
+                "reg_param"])
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:
-            print("\tTraining SVM...")
+            print("\tTraining QDA...")
             # NOTE: I have switched the training and testing set around.
             train_array = np_array.array(map(self._data.__getitem__,
                                              test)).astype(np_float)
@@ -88,14 +70,8 @@ class SVMCls:
             pred = classifier.predict(test_array)
             mislabeled = (test_label_array != pred).sum()
             tp, tn, fp, fn = rc.calculate_tpn_fpn(test_label_array, pred)
-            # print("TP: {0}\tTN: {1}\tFP: {2}\tFN: {3}".format(tp, tn,
-            #                                                   fp, fn))
             detection_rate = rc.detection_rate(tp, fn)
             false_pos_rate = rc.false_positive_rate(tn, fp)
-            # print("Detection rate: {0}\tFalse positive rate: "
-            #       "{1}".format(detection_rate, false_pos_rate))
-            # print("Number of mislabelled points out of a total {0} "
-            #       "points : {1}".format(test_size, mislabeled))
             all_results.append([fold_num, tp, tn, fp, fn, detection_rate,
                                 false_pos_rate, mislabeled, test_size])
             fold_num += 1

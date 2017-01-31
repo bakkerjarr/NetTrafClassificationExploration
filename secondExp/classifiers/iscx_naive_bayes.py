@@ -15,16 +15,16 @@
 from numpy import float32 as np_float
 
 import numpy.core.multiarray as np_array
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
 
-from vetted.classifiers import iscx_result_calc as rc
+import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 
 
-class KNNCls:
+class NaiveBayesCls:
 
-    NAME = "K-Nearest_Neighbours"
+    NAME = "Naive_Bayes"
 
     def __init__(self, config, data, labels, skf):
         """Initialise.
@@ -35,34 +35,24 @@ class KNNCls:
         :param skf: StratifiedKFold object representing what data set
         elements belong in each fold.
         """
-        self._config = config[self.NAME]
+        self._config = None  # sklearn's Naive Bayes has no parameters
         self._data = data
         self._labels = labels
         self._kfold = skf
 
     def classify(self):
-        """Classify DDoS flows using K-Nearest Neighbours.
+        """Classify DDoS flows using Naive Bayes.
 
         The data passed through to the fit() method cannot be a string
         type.
 
         :return: Results of the classification.
         """
-        classifier = KNeighborsClassifier(n_neighbors=self._config[
-            "n_neighbors"], weights=self._config["weights"],
-                                          algorithm=self._config[
-                                              "algorithm"],
-                                          leaf_size=self._config[
-                                              "leaf_size"],
-                                          metric=self._config["metric"],
-                                          p=self._config["p"],
-                                          metric_params=self._config[
-                                              "metric_params"],
-                                          n_jobs=self._config["n_jobs"])
+        classifier = GaussianNB()
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:
-            print("\tTraining K-Nearest Neighbours...")
+            print("\tTraining Naive Bayes...")
             # NOTE: I have switched the training and testing set around.
             train_array = np_array.array(map(self._data.__getitem__,
                                              test)).astype(np_float)

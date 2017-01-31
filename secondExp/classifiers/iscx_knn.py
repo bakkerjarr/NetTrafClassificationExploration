@@ -15,16 +15,16 @@
 from numpy import float32 as np_float
 
 import numpy.core.multiarray as np_array
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
 
-from vetted.classifiers import iscx_result_calc as rc
+import iscx_result_calc as rc
 
 __author__ = "Jarrod N. Bakker"
 
 
-class RandomForestCls:
+class KNNCls:
 
-    NAME = "Random_Forest"
+    NAME = "K-Nearest_Neighbours"
 
     def __init__(self, config, data, labels, skf):
         """Initialise.
@@ -41,41 +41,28 @@ class RandomForestCls:
         self._kfold = skf
 
     def classify(self):
-        """Classify DDoS flows using a Random Forest.
+        """Classify DDoS flows using K-Nearest Neighbours.
 
         The data passed through to the fit() method cannot be a string
         type.
 
         :return: Results of the classification.
         """
-        classifier = RandomForestClassifier(n_estimators=self._config[
-            "n_estimators"], criterion=self._config["criterion"],
-                                            max_depth=self._config[
-                                                "max_depth"],
-                                            min_samples_split=self._config["min_samples_split"],
-                                            min_samples_leaf=self._config["min_samples_leaf"],
-                                            min_weight_fraction_leaf=self._config["min_weight_fraction_leaf"],
-                                            max_features=self._config[
-                                                "max_features"],
-                                            max_leaf_nodes=self._config["max_leaf_nodes"],
-                                            bootstrap=self._config[
-                                                "bootstrap"],
-                                            oob_score=self._config[
-                                                "oob_score"],
-                                            n_jobs=self._config[
-                                                "n_jobs"],
-                                            random_state=self._config[
-                                                "random_state"],
-                                            verbose=self._config[
-                                                "verbose"],
-                                            warm_start=self._config[
-                                                "warm_start"],
-                                            class_weight=self._config[
-                                                "class_weight"])
+        classifier = KNeighborsClassifier(n_neighbors=self._config[
+            "n_neighbors"], weights=self._config["weights"],
+                                          algorithm=self._config[
+                                              "algorithm"],
+                                          leaf_size=self._config[
+                                              "leaf_size"],
+                                          metric=self._config["metric"],
+                                          p=self._config["p"],
+                                          metric_params=self._config[
+                                              "metric_params"],
+                                          n_jobs=self._config["n_jobs"])
         all_results = []  # Results from all fold trials
         fold_num = 1
         for train, test in self._kfold:
-            print("\tTraining Random Forest...")
+            print("\tTraining K-Nearest Neighbours...")
             # NOTE: I have switched the training and testing set around.
             train_array = np_array.array(map(self._data.__getitem__,
                                              test)).astype(np_float)
@@ -91,14 +78,8 @@ class RandomForestCls:
             pred = classifier.predict(test_array)
             mislabeled = (test_label_array != pred).sum()
             tp, tn, fp, fn = rc.calculate_tpn_fpn(test_label_array, pred)
-            # print("TP: {0}\tTN: {1}\tFP: {2}\tFN: {3}".format(tp, tn,
-            #                                                   fp, fn))
             detection_rate = rc.detection_rate(tp, fn)
             false_pos_rate = rc.false_positive_rate(tn, fp)
-            # print("Detection rate: {0}\tFalse positive rate: "
-            #       "{1}".format(detection_rate, false_pos_rate))
-            # print("Number of mislabelled points out of a total {0} "
-            #       "points : {1}".format(test_size, mislabeled))
             all_results.append([fold_num, tp, tn, fp, fn, detection_rate,
                                 false_pos_rate, mislabeled, test_size])
             fold_num += 1

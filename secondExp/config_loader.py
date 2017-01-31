@@ -39,7 +39,6 @@ class ConfigLoader:
             print("Reading configuration from: {0}".format(
                 self._file_path))
             self._classifier_conf = yaml.load(conf_file)
-            # TODO read in "None" and change to Python None
             for cls in self._classifier_conf:
                 for items in self._classifier_conf[cls]:
                     if self._classifier_conf[cls][items] == "None":

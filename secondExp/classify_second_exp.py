@@ -54,8 +54,6 @@ class Classify:
 
     def run_tests(self):
         """Test a bunch of classifiers.
-
-        :return: ?
         """
         with open(self._TEST_DEBUG, mode="a") as f_debug:
             cur_dt = str(datetime.datetime.now())
